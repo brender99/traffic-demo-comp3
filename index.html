@@ -390,7 +390,7 @@
     <section id="home" class="hero">
         <div class="container">
             <div class="hero-video-container">
-                <video class="hero-video" autoplay muted loop controls>
+                <video class="hero-video" autoplay muted loop controls playsinline webkit-playsinline>
                     <source src="files/BSH_Sample.mp4" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
@@ -631,6 +631,25 @@
             video.addEventListener('error', (e) => {
                 console.error('Video loading error:', e);
             });
+
+            // Enhanced mobile video support
+            video.addEventListener('canplay', () => {
+                // Try to play the video on mobile devices
+                const playPromise = video.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.log('Auto-play prevented, user interaction required:', error);
+                        // On mobile, show play button or handle user interaction
+                    });
+                }
+            });
+
+            // Handle iOS specific video behavior
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+                video.setAttribute('playsinline', 'true');
+                video.setAttribute('webkit-playsinline', 'true');
+                console.log('iOS device detected, inline playback enabled');
+            }
         }
 
         // Add some interactive features
